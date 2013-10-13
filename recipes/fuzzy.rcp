@@ -1,0 +1,6 @@
+(:name fuzzy
+       :website "https://github.com/auto-complete/fuzzy-el"
+       :description "Fuzzy matching utilities for GNU Emacs"
+       :type git
+       :url "http://github.com/auto-complete/fuzzy-el.git"
+       :checkout "b47d801d4e1ff67323eda4d602e78c31fbc5a08a")

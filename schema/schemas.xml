@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
+    <transformURI fromPattern="*.xml" toPattern="*.rnc"/>
+    <uri pattern="*.xsl" typeId="XSLT"/>
+    <uri pattern="*.xprocspec" typeId="XProcSpec"/>
+    <uri pattern="*.xspec" typeId="XSpec"/>
+    <uri pattern="*.xsd" typeId="XMLSchema"/>
+    <uri pattern="pom.xml" typeId="Maven"/>
+    <uri pattern="*.obfl" typeId="OBFL"/>
+    <namespace ns="http://www.w3.org/1999/XSL/Transform" typeId="XSLT"/>
+    <namespace ns="http://www.daisy.org/ns/pipeline/xproc/test" typeId="XProcSpec"/>
+    <namespace ns="http://www.jenitennison.com/xslt/xspec" typeId="XSpec"/>
+    <namespace ns="http://www.daisy.org/z3986/2005/dtbook/" typeId="DTBook"/>
+    <namespace ns="http://www.daisy.org/ns/z3998/authoring/" typeId="ZedAI"/>
+    <namespace ns="http://www.w3.org/2001/XMLSchema" typeId="XMLSchema"/>
+    <namespace ns="http://maven.apache.org/POM/4.0.0" typeId="Maven"/>
+    <documentElement prefix="xsl" localName="stylesheet" typeId="XSLT"/>
+    <documentElement prefix="x" localName="description" typeId="XProcSpec"/>
+    <documentElement prefix="x" localName="description" typeId="XSpec"/>
+    <documentElement prefix="" localName="dtbook" typeId="DTBook"/>
+    <documentElement prefix="dtb" localName="dtbook" typeId="DTBook"/>
+    <documentElement prefix="" localName="document" typeId="ZedAI"/>
+    <documentElement prefix="z" localName="document" typeId="ZedAI"/>
+    <documentElement prefix="" localName="schema" typeId="XMLSchema"/>
+    <documentElement prefix="xs" localName="schema" typeId="XMLSchema"/>
+    <documentElement prefix="xsd" localName="schema" typeId="XMLSchema"/>
+    <documentElement prefix="" localName="project" typeId="Maven"/>
+    <documentElement prefix="" localName="obfl" typeId="OBFL"/>
+    <typeId id="XSLT" uri="xslt.rnc"/>
+    <typeId id="XProcSpec" uri="xprocspec.rnc"/>
+    <typeId id="XSpec" uri="xspec.rnc"/>
+    <typeId id="DTBook" uri="dtbook.rnc"/>
+    <typeId id="ZedAI" uri="z3998-book-single.rnc"/>
+    <typeId id="XMLSchema" uri="xml-schema.rnc"/>
+    <typeId id="Maven" uri="maven-v4_0_0.rnc"/>
+    <typeId id="OBFL" uri="obfl.rnc"/>
+</locatingRules>

@@ -1,0 +1,5 @@
+(:name auctex
+       :type http-tar
+       :options ("xzf")
+       :url "http://ftp.gnu.org/gnu/auctex/auctex-11.86.tar.gz"
+       :prepare (add-to-exec-path "/usr/texbin"))

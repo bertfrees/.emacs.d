@@ -1,0 +1,5 @@
+(:name haml-mode
+       :description "Major mode for editing Haml files"
+       :type git
+       :url "http://github.com/nex3/haml-mode.git"
+       :checkout "6c32a5c7681b8df902a8ba483bdc2345aa547aa7")

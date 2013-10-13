@@ -1,0 +1,4 @@
+(:name nrepl
+       :type git
+       :url "http://github.com/clojure-emacs/nrepl.el.git"
+       :checkout "67a2de0e5b5c9b43ca7ca1b668919e1b3e7589a0")

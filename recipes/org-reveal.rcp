@@ -1,0 +1,7 @@
+(:name org-reveal
+       :type git
+       :url "http://github.com/yjwen/org-reveal.git"
+       :checkout "525a554495ec157adee3773f5f6868bfa1be8f06"
+       :description "Exports Org-mode contents to Reveal.js HTML presentation."
+       :depends org-mode
+       :features ox-reveal)

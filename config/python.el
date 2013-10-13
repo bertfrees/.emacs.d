@@ -1,0 +1,42 @@
+;; -----------------------------------------------------------------------------
+;; PYTHON
+;; -----------------------------------------------------------------------------
+
+(require-package 'python 'python-mode)
+
+(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
+(add-to-list 'interpreter-mode-alist '("python" . python-mode))
+
+(eval-after-load 'python '(progn
+  
+  (setq-default python-indent-offset 4)
+  
+  (require-package 'jedi)
+  
+  (require 'jedi)
+  
+  ;; synchronous jedi:complete-request
+  (defun jedi:complete-request-sync ()
+    (deferred:sync! (jedi:complete-request)))
+  
+  ;; fix for starting completion anywhere
+  (defun jedi:ac-direct-prefix ()
+    (save-excursion (ignore-errors (beginning-of-thing 'symbol)) (point)))
+  
+  (ac-define-source jedi-direct-sync
+    '((init . jedi:complete-request-sync)
+      (prefix . jedi:ac-direct-prefix)
+      (candidates . jedi:ac-direct-matches)
+      (requires . -1)
+      (cache)))
+  
+  (add-hook 'python-mode-hook
+    (lambda () (local-set-key (kbd "RET") 'newline-and-indent)
+               (guess-style-guess-variable 'indent-tabs-mode)
+               (guess-style-guess-variable 'tab-width)
+               (guess-style-guess-variable 'python-indent-offset 'guess-style-guess-indent)
+               (smart-tabs-mode t)
+               (when (display-graphic-p)
+                 (whitespace-mode t))
+               (auto-complete-mode t)
+               (setq ac-sources '(ac-source-jedi-direct-sync))))))

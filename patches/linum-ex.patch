@@ -1,0 +1,24 @@
+--- a/linum-ex.el
++++ b/linum-ex.el
+@@ -206,9 +206,9 @@
+         (limit (window-end win t))
+         (fmt (cond ((stringp linum-format) linum-format)
+                    ((eq linum-format 'dynamic)
+-                    (let ((w (length (number-to-string
+-                                      (count-lines (point-min) (point-max))))))
+-                      (concat "%" (number-to-string w) "d")))))
++                    (let ((w (+ (length (number-to-string
++                                      (count-lines (point-min) (point-max)))) 1)))
++                      (concat "%" (number-to-string w) "d ")))))
+         (width 0))
+     (run-hooks 'linum-before-numbering-hook)
+     ;; Create an overlay (or reuse an existing one) for each
+@@ -224,7 +224,7 @@
+                               (push o linum-overlays))
+                             (setq linum-available (delete o linum-available))
+                             (throw 'visited t))))))
+-        (setq width (max width (length str)))
++        (setq width (max width (+ (length str) 1)))
+         (unless visited
+           (let ((ov (if (null linum-available)
+                         (make-overlay (point) (point))

@@ -1,0 +1,4 @@
+(:name emacs-jabber
+       :type http-tar
+       :options ("xzf")
+       :url "http://sourceforge.net/projects/emacs-jabber/files/emacs-jabber/0.8.0/emacs-jabber-0.8.0.tar.gz/download")

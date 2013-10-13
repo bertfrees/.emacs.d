@@ -1,0 +1,589 @@
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace local = ""
+namespace ns1 = "http://www.w3.org/1999/xhtml"
+default namespace ns2 = "http://www.daisy.org/ns/xprocspec"
+namespace ns3 = "http://www.w3.org/ns/xproc"
+namespace ns4 = "http://www.w3.org/ns/xproc-step"
+
+start = description
+description =
+  [
+    a:documentation [
+      xml:space = "preserve"
+      "The `description` element is the root element of an xprocspec test and describes the functionality of a specific XProc script."
+    ]
+  ]
+  element description {
+    description.common,
+    ((import*, (scenario | pending-scenario)+)
+     | (import+, (scenario | pending-scenario)*))
+  }
+description.common =
+  common-attributes,
+  
+  ## The `script` attribute is a URI that points to the XProc script you want to test.
+  attribute script { xsd:anyURI },
+  
+  ## The `version` attribute can be used to aid development over time.
+  attribute version { xsd:NMTOKEN }?,
+  pending-attribute?
+common-attributes =
+  
+  ## Foreign attributes.
+  attribute * - (local:* | ns2:* | ns4:* | ns3:*) { text }*
+import =
+  [
+    a:documentation [
+      xml:space = "preserve"
+      "\x{a}" ~
+      "                An import runs the xprocspec description in the referenced file. It has no\x{a}" ~
+      "                effect on the scenarios in the current document, but can be a useful method\x{a}" ~
+      "                to group xprocspec descriptions into a test suite.\x{a}" ~
+      "                Importing is recursive and may be circular (although only one copy of a given\x{a}" ~
+      "                imported document will actually be imported).\x{a}" ~
+      "            "
+    ]
+  ]
+  element import {
+    common-attributes,
+    
+    ## The `href` attribute contains a URI pointing to the xprocspec file to be imported.
+    attribute href { xsd:anyURI }
+  }
+scenario =
+  [
+    a:documentation [
+      xml:space = "preserve"
+      "\x{a}" ~
+      "                A scenario groups together the definition of the script environment\x{a}" ~
+      "                (the `call` element) and the script assertions (the `context` and\x{a}" ~
+      "                `expect` elements). The `call`\x{a}" ~
+      "                element defines the inputs, options and parameters passed to the step\x{a}" ~
+      "                and the `context` and `expect` elements are used to perform assertions\x{a}" ~
+      "                on the result. Child scenarios inherit the contents of the `call`\x{a}" ~
+      "                element, but can override its inputs, options and parameters by in its\x{a}" ~
+      "                own `call` element.\x{a}" ~
+      "            "
+    ]
+  ]
+  element scenario {
+    scenario.common,
+    focus-attribute?,
+    (scenario.common-children | call)?
+  }
+scenario.common = common-attributes, label
+scenario.common-children =
+  call,
+  ((scenario | pending-scenario)+
+   | ((context, expect+) | pending-assertions)+)
+call.common = common-attributes, (input | option | param)*
+call =
+  [
+    a:documentation [
+      xml:space = "preserve"
+      "\x{a}" ~
+      "                A `call` element defines a step call and the\x{a}" ~
+      "                inputs, options and parameters passed to it.\x{a}" ~
+      "            "
+    ]
+  ]
+  element call {
+    call.common,
+    [
+      a:documentation [
+        xml:space = "preserve"
+        "\x{a}" ~
+        "                        The `step` attribute is the name of the step (as declared in XProc scripts by the `p:declare-step/@type` attribute).\x{a}" ~
+        '                        For instance `step="example:mystep"`.\x{a}' ~
+        "                        The `step` attribute must be specified on either the `call` element or one of the ancestor `call` elements.\x{a}" ~
+        "                    "
+      ]
+    ]
+    attribute step { xsd:QName }?
+  }
+option =
+  
+  ## The option element is used to provide values to XProc options on the XProc step you are testing.
+  element option {
+    common-attributes,
+    
+    ## The `name` attribute is the name of the option used in the XProc step.
+    attribute name { xsd:QName },
+    [
+      xml:space = "preserve"
+      a:documentation [
+        "\x{a}" ~
+        "                    "
+        ns1:p [
+          "The `select` attribute is a XPath expression used to select a value for the XProc option\x{a}" ~
+          "                        (equivalent of the `p:with-option/@select` attribute in XProc)."
+        ]
+        "\x{a}" ~
+        "                    "
+        ns1:p [
+          'The variable "`$temp-dir`" is available for use in the select expression. The variable refers to the temporary\x{a}' ~
+          "                        directory used for the test. This is useful (for instance) if the value of\x{a}" ~
+          "                        the option is a URI pointing to a directory where the XProc steps will store files. Every xprocspec\x{a}" ~
+          "                        scenario is assigned its own temporary directory so that subsequent evaluations of the step does not conflict\x{a}" ~
+          "                        with eachother."
+        ]
+        "\x{a}" ~
+        "                "
+      ]
+    ]
+    attribute select { text }
+  }
+param =
+  
+  ## The param element is used to provide values to XProc paramaters on the XProc step you are testing.
+  element param {
+    common-attributes,
+    
+    ## The `name` attribute is the name of the parameter to be provided on the XProc steps primary parameter input port.
+    attribute name { xsd:QName },
+    [
+      a:documentation [
+        "\x{a}" ~
+        "                    "
+        ns1:p [
+          "The `select` attribute is a XPath expression used to select a value for the XProc parameter (equivalent of the `p:with-param/@select` attribute in XProc)."
+        ]
+        "\x{a}" ~
+        "                    "
+        ns1:p [
+          'The variable "`$temp-dir`" is available for use in the select expression. The variable refers to the temporary directory used for the test. This is useful (for instance) if the value of the parameter is a URI pointing to a\x{a}' ~
+          "                        directory where the XProc steps will store files. Every xprocspec scenario is assigned its own temporary directory so that subsequent evaluations of the step does not conflict with eachother."
+        ]
+        "\x{a}" ~
+        "                "
+      ]
+    ]
+    attribute select { text }
+  }
+input =
+  
+  ## The input element is used to provide documents on the input ports of the XProc step you are testing.
+  element input {
+    common-attributes,
+    attribute port {
+      xsd:string { pattern = ".+" }
+    },
+    document*
+  }
+label =
+  [
+    a:documentation [
+      xml:space = "preserve"
+      "The `label` attribute is used to describe the current element in human-readable words."
+    ]
+  ]
+  attribute label {
+    xsd:string { pattern = ".+" }
+  }
+context.attributes = common-attributes, pending-attribute?, label
+context =
+  
+  ## Defines the context against which assertions are made.
+  element context { context.attributes, document* }
+expect.attributes =
+  label, (pending-attribute | focus-attribute)?, common-attributes
+expect =
+  [
+    a:documentation [
+      xml:space = "preserve"
+      "\x{a}" ~
+      "                Defines what is expected from the context document(s).\x{a}" ~
+      "            "
+    ]
+  ]
+  element expect {
+    ((# XPath assertion
+      
+      ## The `type` attribute is used to define the type of assertion you want to make.
+      attribute type { "xpath" },
+      [
+        a:documentation [
+          xml:space = "preserve"
+          "\x{a}" ~
+          "                            When `type` is `xpath`, you can use the `test` attribute to define a XPath expression.\x{a}" ~
+          "                            By default, the expression must evaluate to `true()` for the test to succeed.\x{a}" ~
+          "                        "
+        ]
+      ]
+      attribute test { text },
+      [
+        a:documentation [
+          xml:space = "preserve"
+          "\x{a}" ~
+          "                                When `type` is `xpath`, the `equals` attribute defines the value that the `test` expression must evaluate to for the test to succeed.\x{a}" ~
+          """                                By default, `true()` is used. For example, `<x:expect test="/*/@result='value'" .../>` is equivalent to `<x:expect test="/*/@result" equals="'value'" .../>`.\x{a}""" ~
+          "                                It is recommended that you use this attribute when possible, since it will give you better error messages if it fails (you will see the actual value as well as the expected).\x{a}" ~
+          "                            "
+        ]
+      ]
+      attribute equals { text }?)
+     | (# Document comparison
+        [
+          a:documentation [
+            xml:space = "preserve"
+            "\x{a}" ~
+            "                            When `type` is `compare`, you can put a sequence of `x:document` elements inside the `x:expect` element.\x{a}" ~
+            "                            The assertion succeeds if the document sequence in context equals the document sequence inside the `x:expect` element.\x{a}" ~
+            "                        "
+          ]
+        ]
+        attribute type { "compare" },
+        [
+          a:documentation [
+            xml:space = "preserve"
+            "\x{a}" ~
+            "                                By default, whitespace normalization are performed on documents before comparing them with eachother.\x{a}" ~
+            "                                You can disable this by setting `normalize-space` to `false`.\x{a}" ~
+            "                            "
+          ]
+        ]
+        attribute normalize-space { xsd:boolean }?,
+        document*)
+     | (# Document validation
+        
+        ## When `type` is `validate`, the documents in context is validated against the schema provided in the `x:document` element inside the `x:expect` element.
+        attribute type { "validate" },
+        [
+          a:documentation [
+            xml:space = "preserve"
+            "\x{a}" ~
+            "                            The `grammar` attribute is used to set the grammar of the `x:document` element (used when `type` is `validate`).\x{a}" ~
+            "                            The assertion succeeds if all of the documents in context validates against the schema given by the child `x:document` element.\x{a}" ~
+            "                        "
+          ]
+        ]
+        attribute grammar { "relax-ng" | "schematron" | "xml-schema" })
+     | (# Document count
+        
+        ## When `type` is `count`, the number of documents in context is compared with the `min` and `max` attributes.
+        attribute type { "count" },
+        (
+         ## If `min` is specified, then there must be at least this many documents in context for the assertion to succeed.
+         attribute min { xsd:integer }
+         | 
+           ## If `max` is specified, then there must be at most this many documents in context for the assertion to succeed.
+           attribute max { xsd:integer }
+         | (attribute min {
+              # documented above
+              xsd:integer
+            },
+            attribute max {
+              # documented above
+              xsd:integer
+            })))
+     | ([
+          a:documentation [
+            xml:space = "preserve"
+            "\x{a}" ~
+            "                            "
+            ns1:p [
+              "When `type` is `custom`, you can provide your own XProc implementation of an assertion. The step signature must be as follows:"
+            ]
+            "\x{a}" ~
+            "                            "
+            ns1:pre [
+              ns1:code [
+                "\x{a}" ~
+                '<p:declare-step xmlns:p="http://www.w3.org/ns/xproc" type="(...)" (...)>\x{a}' ~
+                '   <p:input port="context" sequence="true"/>\x{a}' ~
+                '   <p:input port="expect" sequence="true"/>\x{a}' ~
+                '   <p:input port="parameters" kind="parameter" primary="true"/>\x{a}' ~
+                '   <p:output port="result" primary="true"/>\x{a}' ~
+                "   (...)\x{a}" ~
+                "</p:declare-step>\x{a}" ~
+                "                            "
+              ]
+            ]
+            "\x{a}" ~
+            "                            "
+            ns1:p [ "How custom steps are invoked:" ]
+            "\x{a}" ~
+            "                            "
+            ns1:ul [
+              "\x{a}" ~
+              "                                "
+              ns1:li [
+                "All attributes on the `expect` element are provided as parameters in a c:param-set document on the primary parameter port of the step.\x{a}" ~
+                "                                    In addition, the `temp-dir` variable (path to temporary directory that can be used for the test) and the `temp-base-uri` variable (path to the xprocspec test document)\x{a}" ~
+                "                                    are passed as parameters in the namespace `http://www.daisy.org/ns/xprocspec`.\x{a}" ~
+                "                                    For instance,\x{a}" ~
+                '                                    `<x:expect xmlns:ex="example" type="custom" ex:foo="bar"/> will result in:\x{a}' ~
+                "                                    "
+                ns1:pre [
+                  ns1:code [
+                    "\x{a}" ~
+                    "`<c:param-set>\x{a}" ~
+                    '    <c:param name="type" namespace="" value="custom"/>\x{a}' ~
+                    '    <c:param name="foo" namespace="example" value="bar"/>\x{a}' ~
+                    '    <c:param name="temp-dir" namespace="http://www.daisy.org/ns/xprocspec" value="file:/path-to-temp-dir"/>\x{a}' ~
+                    '    <c:param name="temp-base-uri" namespace="http://www.daisy.org/ns/xprocspec" value="file:∕some-path/test.xprocspec"/>\x{a}' ~
+                    "</c:param-set>`\x{a}" ~
+                    "                                    "
+                  ]
+                ]
+                "\x{a}" ~
+                "                                "
+              ]
+              "\x{a}" ~
+              "                                "
+              ns1:li [
+                "The sequence of context documents are provided on the `context` port."
+              ]
+              "\x{a}" ~
+              "                                "
+              ns1:li [
+                "The sequence of documents defined inside the `x:expect` element are provided on the `expect` port."
+              ]
+              "\x{a}" ~
+              "                                "
+              ns1:li [
+                "The document on the result port must be a `x:test-result`, with a `result` attribute containing either 'passed', 'failed' or 'skipped',\x{a}" ~
+                "                                    and can contain `x:expected` and `x:was` elements (in that order, at most one of each). The contents of `x:expected` and `x:was` is either text or XML. For instance:\x{a}" ~
+                "                                    "
+                ns1:pre [
+                  ns1:code [
+                    "\x{a}" ~
+                    '<x:test-result xmlns:x="http://www.daisy.org/ns/xprocspec" result="passed">\x{a}' ~
+                    '    <x:expected xml:space="preserve">Description of what the value was expected to be.</x:expected>\x{a}' ~
+                    '    <x:was xml:space="preserve">Description of what the value actually was.</x:was>\x{a}' ~
+                    "</x:test-result>\x{a}" ~
+                    "                                    "
+                  ]
+                ]
+                "\x{a}" ~
+                "                                "
+              ]
+              "\x{a}" ~
+              "                            "
+            ]
+            "\x{a}" ~
+            "                        "
+          ]
+        ]
+        attribute type { "custom" },
+        
+        ## When `type` is `custom`; the `href` attribute is a URI pointing to the XProc script that must be imported for the custom step to be available.
+        attribute href { xsd:anyURI },
+        [
+          a:documentation [
+            xml:space = "preserve"
+            "\x{a}" ~
+            "                            The `step` attribute is the name of the custom step (as declared in XProc scripts by the `p:declare-step/@type` attribute).\x{a}" ~
+            '                            For instance `step="example:mystep"`.\x{a}' ~
+            "                        "
+          ]
+        ]
+        attribute step { xsd:QName },
+        document*)),
+    expect.attributes
+  }
+document =
+  [
+    a:documentation [
+      "\x{a}" ~
+      "                "
+      ns1:p [
+        "The `document` element is used to define which documents are provided on a steps input ports, what the context is when making assertions, and for assertions when making comparisons or performing validations. It can be used in a\x{a}" ~
+        "                    number of ways:"
+      ]
+      "\x{a}" ~
+      "            "
+    ]
+  ]
+  element document {
+    common-attributes,
+    [
+      a:documentation [
+        xml:space = "preserve"
+        "\x{a}" ~
+        "                        The `select` attribute can be used to select portions of the document(s). The matching elements will be provided as a sequence of documents. It is equivalent to the XProc step `p:filter`.\x{a}" ~
+        "                    "
+      ]
+    ]
+    attribute select { text }?,
+    ((# inline document
+      [
+        a:documentation [
+          xml:space = "preserve"
+          "\x{a}" ~
+          "                            If the `type` attribute is `inline`, then the `document` element is replaced by its content. There must be exactly one element inside the `document` element. To specify the base URI of the document, you can specify a\x{a}" ~
+          "                            `xml:base` on either the `document` element (implicit base URI) or the child element itself (explicit base URI).\x{a}" ~
+          "                        "
+        ]
+      ]
+      attribute type { "inline" },
+      
+      ## If the `base-uri` attribute is `temp-dir`, then the URI in the `href` attribute (or the xml:base attribute of the `document` or inline element in the case of inline
+      ##                                 documents) will be resolved against the temporary directory used for the test, instead of the base URI of the xprocspec document.
+      attribute base-uri { "temp-dir" }?,
+      any-element)
+     | (# port (input or output)
+        [
+          a:documentation [
+            xml:space = "preserve"
+            "\x{a}" ~
+            "                            If the `type` attribute is `port`, then the `document` element will be replaced with the documents on that port. The `position` attribute can be used to select only part of the sequence of documents appearing on that\x{a}" ~
+            "                            port.\x{a}" ~
+            "                        "
+          ]
+        ]
+        attribute type { "port" },
+        [
+          a:documentation [
+            xml:space = "preserve"
+            "\x{a}" ~
+            "                            The `port` is the name of a XProc input or output port.\x{a}" ~
+            "                            The `x:document` element will represent the sequence of documents provided on the input port, or the sequence of documents returned on the output port.\x{a}" ~
+            "                        "
+          ]
+        ]
+        attribute port { xsd:QName },
+        
+        ## By specifying the `position` attribute, a certain document in the sequence of documents appearing on the port can be selected.
+        attribute position { "all" | "last" | xsd:integer }?)
+     | (# file
+        [
+          a:documentation [
+            xml:space = "preserve"
+            "\x{a}" ~
+            "                            If the `type` attribute is `file`, then the `document` element will be replaced by the contents of the file located at the location pointed to by the `href` attribute. The default method for reading files is `xml`, but by using\x{a}" ~
+            "                            the `method` attribute you can also choose `html`, `text` and `binary` as methods for loading the file. The `href` URI is by default resolved against the base URI of the xprocspec test document. However, if you provide the\x{a}" ~
+            "                            `base-uri` attribute with a value of `temp-dir`, then the `href` URI will be resolved against the temporary directory used for the test instead.\x{a}" ~
+            "                        "
+          ]
+        ]
+        attribute type { "file" },
+        
+        ## When `type` is `file`; the `href` attribute is a URI pointing to the file you want the contents of.
+        attribute href { xsd:anyURI },
+        
+        ## By default, files loaded by using `method="file"` will be loaded as XML files. Non-XML files can be loaded by specifying another `method`.
+        attribute method { "xml" | "html" | "text" | "binary" }?,
+        [
+          a:documentation [
+            # documented in the "inline" group
+            
+          ]
+        ]
+        attribute base-uri { "temp-dir" }?)
+     | (# directory
+        [
+          a:documentation [
+            xml:space = "preserve"
+            "\x{a}" ~
+            "                            If the `type` attribute is `directory`, then the `document` element will be replaced with a directory listing of the directory pointed to by the `href` attribute. The `href` URI is\x{a}" ~
+            "                            by default resolved against the base URI of the xprocspec test document. However, if you provide the `base-uri` attribute with a value of `temp-dir`, then the `href` URI will be resolved against the temporary directory\x{a}" ~
+            "                            used for the test instead.\x{a}" ~
+            "                        "
+          ]
+        ]
+        attribute type { "directory" },
+        
+        ## When `type` is `directory`; the `href` attribute is a URI pointing to the directory you want listed.
+        attribute href { xsd:anyURI },
+        [
+          a:documentation [
+            xml:space = "preserve"
+            "\x{a}" ~
+            "                                By default, the result is the same as invoking the standard XProc step `p:directory-list`. If you specify the `recursive` attribute and give it the value `true`,\x{a}" ~
+            "                                you will get a recursive directory listing, listing all subfolders and their contents as well.\x{a}" ~
+            "                            "
+          ]
+        ]
+        attribute recursive { xsd:boolean }?,
+        [
+          a:documentation [
+            # documented in the "inline" group
+            
+          ]
+        ]
+        attribute base-uri { "temp-dir" }?)
+     | # errors
+       [
+         a:documentation [
+           xml:space = "preserve"
+           "\x{a}" ~
+           "                            If the `type` attribute is `errors`, then a `c:errors` document (as defined in the XProc spec) will be made available if any errors occur during step execution.\x{a}" ~
+           "                            If no errors occur, an empty sequence is returned.\x{a}" ~
+           "                        "
+         ]
+       ]
+       attribute type { "errors" })
+  }
+pending-assertions =
+  [
+    a:documentation [
+      xml:space = "preserve"
+      "\x{a}" ~
+      "                "
+      ns1:p [
+        "Assertions and scenarios that is within a `pending` element will remain untested, but will be\x{a}" ~
+        "                reported as (eventual) desired behaviour. This is a good way of commenting out\x{a}" ~
+        "                a set of behaviours that haven't been implemented yet, or scenarios whose\x{a}" ~
+        "                desired behaviour hasn't been determined, or tests for code that you're not\x{a}" ~
+        "                currently working on, to make the testing process faster, while still showing\x{a}" ~
+        "                the pending assertions and scenarios in the resulting reports."
+      ]
+      "\x{a}" ~
+      "            "
+    ]
+  ]
+  element pending { common-attributes, label?, (context?, expect+)+ }
+pending-scenario = pending-scenario-wrapped | pending-scenario-attribute
+pending-scenario-wrapped =
+  element pending {
+    common-attributes, label?, (scenario | pending-scenario)+
+  }
+pending-scenario-attribute =
+  element scenario {
+    pending-attribute,
+    scenario.common?,
+    (scenario.common-children | call)?
+  }
+pending-attribute =
+  [
+    a:documentation [
+      xml:space = "preserve"
+      "\x{a}" ~
+      "               "
+      ns1:p [
+        "Assertions or scenarios with the "
+        ns1:code [ "pending" ]
+        " attribute will remain untested, but will be\x{a}" ~
+        "               reported as (eventual) desired behaviour. Its semantics is the same as for the\x{a}" ~
+        "               "
+        ns1:a [ href = "#the-pending-element" ns1:code [ "pending" ] ]
+        " element.\x{a}" ~
+        "               Its content describes why the assertion or scenario should not be evaluated."
+      ]
+      "\x{a}" ~
+      "           "
+    ]
+  ]
+  attribute pending { xsd:string }
+focus-attribute =
+  [
+    a:documentation [
+      xml:space = "preserve"
+      "\x{a}" ~
+      "               "
+      ns1:p [
+        "Assertions or scenarios with the "
+        ns1:code [ "focus" ]
+        " attribute will be the only ones tested and\x{a}" ~
+        "               reported. When present, only that assertion or scenario will be evaluated.\x{a}" ~
+        "               Its content describes why you are focusing on this particular assertion or scenario."
+      ]
+      "\x{a}" ~
+      "           "
+    ]
+  ]
+  attribute focus { xsd:string }
+any-content = any-element* & text
+any-element = element * { any-attribute, any-content* }
+any-attribute = attribute * { text }*

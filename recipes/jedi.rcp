@@ -1,0 +1,8 @@
+(:name jedi
+       :description "An awesome Python auto-completion for Emacs"
+       :type git
+       :url "http://github.com/tkf/emacs-jedi.git"
+       :checkout "ecd44de405c0171bed4e929cdbf514add2865cd8"
+       :submodule nil
+       ;; build manually with `pip install -r requirements.txt` 
+       :depends (epc auto-complete))

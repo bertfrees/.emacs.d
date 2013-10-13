@@ -1,0 +1,12 @@
+auto-save-list
+config/custom.el
+el-get
+elpa
+eshell
+savefile
+swank
+url
+var
+vendor
+.DS_Store
+tramp

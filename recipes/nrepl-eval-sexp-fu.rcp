@@ -1,0 +1,5 @@
+(:name nrepl-eval-sexp-fu
+       :type git
+       :url "http://github.com/samaaron/nrepl-eval-sexp-fu.git"
+       :checkout "243f7f80ccc557096faccaf67bb7cc247a183b67"
+       :depends (highlight paredit))

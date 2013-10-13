@@ -1,0 +1,6 @@
+(:name epc
+       :description "An RPC stack for Emacs Lisp"
+       :type git
+       :url "http://github.com/kiwanami/emacs-epc.git"
+       :checkout "e776c4534aacfd08d92441279e810f4eea28437c"
+       :depends (deferred ctable))

@@ -1,0 +1,4 @@
+(:name highlight
+       :type emacswiki
+       :description "Highlighting commands."
+       :website "https://raw.github.com/emacsmirror/emacswiki.org/master/highlight.el")

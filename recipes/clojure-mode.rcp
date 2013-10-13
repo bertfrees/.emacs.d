@@ -1,0 +1,6 @@
+(:name clojure-mode
+       :website "https://github.com/technomancy/clojure-mode"
+       :description "Emacs support for the Clojure language."
+       :type git
+       :url "http://github.com/technomancy/clojure-mode.git"
+       :checkout "e99898c8a5aa94bb57b674d9a9ed10c854ced0ee")

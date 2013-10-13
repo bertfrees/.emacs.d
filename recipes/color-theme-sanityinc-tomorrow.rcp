@@ -1,0 +1,4 @@
+(:name color-theme-sanityinc-tomorrow
+       :type git
+       :url "http://github.com/purcell/color-theme-sanityinc-tomorrow.git"
+       :checkout "9556b865bef6292158bd7ee63c905a10375a34ed")

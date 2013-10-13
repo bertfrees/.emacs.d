@@ -1,0 +1,3 @@
+(:name linum-ex
+       :type emacswiki
+       :build (list (patch-package 'linum-ex)))

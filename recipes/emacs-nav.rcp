@@ -1,0 +1,3 @@
+(:name emacs-nav
+       :type hg
+       :url "https://code.google.com/p/emacs-nav/")

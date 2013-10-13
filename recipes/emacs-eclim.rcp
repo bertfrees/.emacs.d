@@ -1,0 +1,5 @@
+(:name emacs-eclim
+       :type git
+       :url "http://github.com/senny/emacs-eclim.git"
+       :checkout "343237646aed63db7c7c7c452ba8760f2694af18"
+       :prepare (autoload 'eclim-mode "eclimd" nil t))

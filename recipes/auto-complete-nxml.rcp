@@ -1,0 +1,5 @@
+(:name auto-complete-nxml
+       :type git
+       :url "http://github.com/aki2o/auto-complete-nxml.git"
+       :checkout "2d4b1b2f0bd7ff719f5f6e8bb3304bfab2e44593"
+       :depends (auto-complete))

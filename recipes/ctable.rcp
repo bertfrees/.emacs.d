@@ -1,0 +1,5 @@
+(:name ctable
+       :description "Table Component for elisp"
+       :type git
+       :url "http://github.com/kiwanami/emacs-ctable.git"
+       :checkout "a0ba3f30f90bacaf21cfb9644499aa00b2ded65e")

@@ -1,0 +1,5 @@
+(:name growl
+       :type emacswiki
+       :description "Growl notifications"
+       :website "https://raw.github.com/emacsmirror/emacswiki.org/master/growl.el"
+       :prepare (autoload 'growl "growl"))

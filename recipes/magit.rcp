@@ -1,0 +1,12 @@
+(:name magit
+       :website "https://github.com/magit/magit#readme"
+       :type git
+       :url "http://github.com/magit/magit.git"
+       :checkout "8c41df79cb2cc6da919c3667c367f80efc3916e6"
+       :depends (cl-lib git-modes)
+       :info "."
+       ;; let el-get care about autoloads so that it works with all OSes
+       :build (if (version<= "24.3" emacs-version)
+                  `(("make" ,(format "EMACS=%s" el-get-emacs) "all"))
+                `(("make" ,(format "EMACS=%s" el-get-emacs) "docs")))
+       :build/berkeley-unix (("touch" "`find . -name Makefile`") ("gmake")))

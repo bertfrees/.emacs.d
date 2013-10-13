@@ -1,0 +1,6 @@
+(:name xproc-mode
+       :type git
+       :url "http://github.com/bertfrees/xproc-mode.git"
+       :checkout "alpha"
+       :build (("make"))
+       :depends (auto-complete auto-complete-nxml))

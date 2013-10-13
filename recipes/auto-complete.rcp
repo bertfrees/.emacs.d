@@ -1,0 +1,8 @@
+(:name auto-complete
+       :website "https://github.com/auto-complete/auto-complete"
+       :description "The most intelligent auto-completion extension."
+       :type git
+       :url "http://github.com/auto-complete/auto-complete.git"
+       :checkout "a4f83db2ab9898fb95d27a9ee722fda5d85763ac"
+       :depends (popup fuzzy pos-tip)
+       :prepare (autoload 'auto-complete-mode "auto-complete" nil t))

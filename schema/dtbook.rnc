@@ -1,0 +1,2 @@
+dtbook3 = external "dtbook-2005-3.rnc"
+start = dtbook3

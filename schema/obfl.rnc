@@ -1,0 +1,235 @@
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace local = ""
+
+blockContents =
+  text
+  | leader
+  | marker
+  | anchor
+  | br
+  | evaluate
+  | page-number
+  | span
+  | style
+# Namespace currently not in use, this should be changed
+\namespace = empty
+# xmlns CDATA #FIXED 'http://www.daisy.org/ns/2011/obfl'
+blockAtts =
+  attribute break-before { "auto" | "page" }?,
+  attribute first-line-indent { text }?,
+  attribute keep { "auto" | "all" }?,
+  attribute keep-with-next {
+    "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+  }?,
+  attribute keep-with-previous-sheets {
+    "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+  }?,
+  attribute keep-with-next-sheets {
+    "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+  }?,
+  attribute list-type { "none" | "ol" | "ul" | "pl" }?,
+  attribute margin-bottom { text }?,
+  attribute margin-left { text }?,
+  attribute margin-top { text }?,
+  attribute margin-right { text }?,
+  attribute text-indent { text }?,
+  attribute block-indent { text }?,
+  attribute align { "left" | "center" | "right" }?,
+  attribute vertical-align { "before" | "center" | "after" }?,
+  attribute vertical-position { text }?,
+  attribute id { xsd:ID }?
+sequenceAtts =
+  attribute master { xsd:IDREF },
+  attribute initial-page-number { text }?
+textAtts =
+  attribute xml:lang { xsd:language }?,
+  attribute hyphenate { "true" | "false" }?
+# Document root
+obfl =
+  element obfl {
+    attlist.obfl,
+    meta?,
+    layout-master+,
+    table-of-contents*,
+    volume-template*,
+    sequence+
+  }
+attlist.obfl &=
+  \namespace,
+  attribute version { "2011-1" },
+  attribute xml:lang { xsd:language },
+  attribute hyphenate { "true" | "false" }?
+#
+meta = element meta { attlist.meta, any }
+attlist.meta &= empty
+# Layout master
+layout-master =
+  element layout-master {
+    attlist.layout-master, template*, default-template
+  }
+# the frame attribute should contain solid and thin or wide and inner or outer. For example:
+# 'solid thin outer'
+attlist.layout-master &=
+  attribute name { xsd:ID },
+  attribute page-width { text },
+  attribute page-height { text },
+  attribute inner-margin { text }?,
+  attribute outer-margin { text }?,
+  attribute row-spacing { text }?,
+  attribute duplex { "true" | "false" }?,
+  attribute page-number-variable { text }?,
+  attribute frame { xsd:NMTOKENS }?
+template = element template { attlist.template, header, footer }
+attlist.template &= attribute use-when { text }
+default-template =
+  element default-template { attlist.default-template, header, footer }
+attlist.default-template &= empty
+header = element header { attlist.header, field* }
+attlist.header &= empty
+footer = element footer { attlist.footer, field* }
+attlist.footer &= empty
+field =
+  element field {
+    attlist.field,
+    (marker-reference | \string | current-page | evaluate)+
+  }
+attlist.field &= empty
+current-page = element current-page { attlist.current-page, empty }
+attlist.current-page &= attribute style { "default" | "roman" }
+marker-reference =
+  element marker-reference { attlist.marker-reference, empty }
+attlist.marker-reference &=
+  attribute marker { xsd:NMTOKEN },
+  attribute direction { "forward" | "backward" },
+  attribute scope { "page_content" | "page" | "sequence" }
+\string = element string { attlist.string, empty }
+attlist.string &= attribute value { text }
+evaluate = element evaluate { attlist.evaluate, empty }
+attlist.evaluate &= attribute expression { text }
+table-of-contents =
+  element table-of-contents { attlist.table-of-contents, toc-entry+ }
+attlist.table-of-contents &= attribute name { xsd:ID }
+toc-entry =
+  element toc-entry { attlist.toc-entry, (blockContents | toc-entry)* }
+attlist.toc-entry &=
+  attribute ref-id { xsd:IDREF },
+  blockAtts,
+  textAtts
+volume-template =
+  element volume-template {
+    attlist.volume-template, pre-content, post-content
+  }
+attlist.volume-template &=
+  attribute use-when { text }?,
+  attribute volume-number-variable { text }?,
+  attribute volume-count-variable { text }?,
+  attribute sheets-in-volume-max { text }
+pre-content =
+  element pre-content {
+    attlist.pre-content, (sequence | toc-sequence)*
+  }
+attlist.pre-content &= empty
+post-content = element post-content { attlist.post-content, sequence* }
+attlist.post-content &= empty
+toc-sequence =
+  element toc-sequence {
+    attlist.toc-sequence,
+    on-toc-start*,
+    on-volume-start*,
+    on-volume-end*,
+    on-toc-end*
+  }
+attlist.toc-sequence &=
+  attribute toc { xsd:IDREF },
+  attribute range { "document" | "volume" },
+  attribute use-when { text },
+  sequenceAtts,
+  textAtts
+on-toc-start = element on-toc-start { attlist.on-toc-start, block+ }
+attlist.on-toc-start &= attribute use-when { text }?
+on-volume-start =
+  element on-volume-start { attlist.on-volume-start, block+ }
+attlist.on-volume-start &= attribute use-when { text }?
+on-volume-end = element on-volume-end { attlist.on-volume-end, block+ }
+attlist.on-volume-end &= attribute use-when { text }?
+on-toc-end = element on-toc-end { attlist.on-toc-end, block+ }
+attlist.on-toc-end &= attribute use-when { text }?
+# A sequence of blocks
+sequence = element sequence { attlist.sequence, block+, float-item* }
+# master, name of master to use for this sequence
+# initial-page-number, number of first page in the sequence
+# hypenate not implemented
+attlist.sequence &= sequenceAtts, textAtts
+float-item = element float-item { attlist.float-item, block+ }
+attlist.float-item &=
+  attribute name { xsd:ID },
+  attribute xml:lang { xsd:language }?
+# A block of text
+block = element block { attlist.block, (blockContents | block)* }
+# break-before, if present, break before block begins
+# first-line-indent, indent (in chars) of first line block
+# keep, keep rows in this block
+# keep-with-next, keep the following block's first line(s) together with this block
+# list-type, the list type of this block
+# margin-bottom, bottom margin for this block (in rows)
+# margin-left, left margin for this block (in chars)
+# margin-top, top margin for this block (in rows)
+# margin-right, right margin for this block (in chars)
+# text-indent, indent (in chars) of every line in the block except the first one
+# block-indent, indent (in chars) of this block's block children
+attlist.block &= blockAtts, textAtts
+span = element span { attlist.span, (text | style)* }
+attlist.span &= textAtts
+style = element style { attlist.style, (text | style | marker | br)* }
+attlist.style &= attribute name { xsd:NMTOKEN }
+
+## A marker, use with headers/footers
+marker = element marker { attlist.marker, empty }
+# class, 
+# value, value for this marker
+attlist.marker &=
+  [
+    a:documentation [
+      "\x{a}" ~
+      "        "
+      a:p [ "class name for this marker" ]
+      "\x{a}" ~
+      "      "
+    ]
+  ]
+  attribute class { text },
+  attribute value { text }
+# A leader, move to a specific location within the current row
+leader = element leader { attlist.leader, empty }
+# align, 	alignment of the text following the leader.
+#		    The leader can be aligned to the left, center or
+#		    right of the following text segment. Left is
+#		    default.
+# pattern, 	fill pattern to use up to the leader position, " "
+#		    is default.
+# position, position of the leader within the row. Can be
+#		    relative (percent) or absolute (column).
+attlist.leader &=
+  attribute align { "left" | "center" | "right" }?,
+  attribute pattern { text }?,
+  attribute position { text }
+anchor = element anchor { attlist.anchor, empty }
+attlist.anchor &= attribute float-item { xsd:IDREF }
+# Break line
+br = element br { attlist.br, empty }
+attlist.br &= empty
+page-number = element page-number { attlist.page-number, empty }
+attlist.page-number &=
+  attribute ref-id { xsd:IDREF },
+  attribute style { "default" | "roman" }?
+start = obfl
+any =
+  (element * - 
+               ## 
+               ##                 don't use default namespace here, because it is currently reserved for OBFL
+               ##               
+               (local:*) {
+     attribute * { text }*,
+     any
+   }
+   | text)*

@@ -1,0 +1,4 @@
+(:name git-gutter
+       :type git
+       :url "http://github.com/syohex/emacs-git-gutter.git"
+       :checkout "4feb5c8a73fc6a96471cd82408e9d4d75c61de1b")

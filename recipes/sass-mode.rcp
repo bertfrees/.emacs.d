@@ -1,0 +1,3 @@
+(:name sass-mode
+       :type elpa
+       :depends (haml-mode))
