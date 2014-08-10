@@ -1,0 +1,13 @@
+* Scala
+
+#+BEGIN_SRC emacs-lisp
+  
+  (require-package 'scala-mode2 'scala-mode t)
+  
+  (add-to-list 'auto-mode-alist '("\\.scala\\'" scala-mode))
+  
+  ;; -----------------------------------------------------------------------------
+  
+  (provide 'config-scala)
+  
+#+END_SRC

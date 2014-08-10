@@ -1,0 +1,97 @@
+* White space
+
+#+BEGIN_SRC emacs-lisp
+  
+  ;; tabs
+  (setq-default indent-tabs-mode t)
+  (setq-default tab-width 4)
+  
+  ;; guess style
+  (require-package 'guess-style 'guess-style-guess-variable)
+  
+  ;; -----------------------------------------------------------------------------
+  ;; WHITESPACE-MODE
+  ;; -----------------------------------------------------------------------------
+  
+  (custom-set-variables
+   '(whitespace-style '(face
+                        tabs
+                        spaces
+                        newline
+                        space-mark
+                        tab-mark
+                        newline-mark
+                        indentation
+                        trailing
+                        space-after-tab::tab
+                        space-before-tab))
+   '(whitespace-trailing-regexp
+      "[^\n\t ]\\(\\(\t\\| \\|\xA0\\|\x8A0\\|\x920\\|\xE20\\|\xF20\\)+\\)$")
+   '(whitespace-indentation-regexp
+      '("^\t*\\(\\( \\)+\\)" . "^ *\\(\t+\\)"))
+   '(whitespace-space-after-tab-regexp
+      '("\t+\\(\\( \\)+\\)[^ \t]" . "\\(\t+\\) +")))
+  
+  (custom-set-faces
+    '(whitespace-tab              ((t (:foreground "#eeeeee"))))
+    '(whitespace-space            ((t (:foreground "#eeeeee"))))
+    '(whitespace-newline          ((t (:foreground "#eeeeee"))))
+    '(whitespace-hspace           ((t (:foreground "#cccccc"))))
+    '(whitespace-indentation      ((t (:foreground "#ffffff" :background "#dddddd"))))
+    '(whitespace-trailing         ((t (:foreground "#cccccc" :background "#ffffff"))))
+    '(whitespace-space-after-tab  ((t (:foreground "#ffffff" :background "#dddddd"))))
+    '(whitespace-space-before-tab ((t (:foreground "#cccccc" :background "#ffffff")))))
+  
+  ;; -----------------------------------------------------------------------------
+  ;; SMART-TABS-MODE
+  ;; -----------------------------------------------------------------------------
+  
+  (defvar smart-tabs-mode nil)
+  
+  (define-minor-mode smart-tabs-mode
+    "Intelligently indent with tabs, align with spaces!")
+  
+  (defmacro no-tabs-advice (function)
+    `(unless (ad-find-advice ',function 'around 'smart-tabs)
+       (defadvice ,function (around smart-tabs activate)
+         (if smart-tabs-mode
+           (let ((indent-tabs-mode nil)) ad-do-it)
+           ad-do-it))))
+  
+  (defmacro smart-tabs-advice (function offset)
+    `(unless (ad-find-advice ',function 'around 'smart-tabs)
+       (defadvice ,function (around smart-tabs activate)
+         (cond
+           ((and smart-tabs-mode
+                 indent-tabs-mode
+                 (eq tab-width ,offset))
+             (save-excursion
+               (beginning-of-line)
+               (while (looking-at "\t*\\( +\\)\t+")
+                 (replace-match "" nil nil nil 1)))
+             (let ((tab-width fill-column)
+                   (,offset fill-column))
+               (unwind-protect
+                 (progn ad-do-it))))
+           (t ad-do-it)))))
+  
+  (no-tabs-advice align)
+  (no-tabs-advice align-regexp)
+  (no-tabs-advice indent-relative)
+  
+  (unless (ad-find-advice 'indent-according-to-mode 'around 'smart-tabs)
+    (defadvice indent-according-to-mode (around smart-tabs activate)
+      (if smart-tabs-mode
+        (let ((indent-tabs-mode indent-tabs-mode))
+          (if (memq indent-line-function
+                    '(indent-relative
+                      indent-relative-maybe))
+            (setq indent-tabs-mode nil))
+          ad-do-it)
+        ad-do-it)))
+  
+  ;; -----------------------------------------------------------------------------
+  
+  (provide 'config-whitespace)
+  
+#+END_SRC

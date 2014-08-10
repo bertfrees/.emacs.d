@@ -1,0 +1,13 @@
+* LaTeX
+
+#+BEGIN_SRC emacs-lisp
+  
+  (require-package 'auctex 'LaTeX-mode)
+  
+  (add-to-list 'auto-mode-alist '("\\.latex\\'" . LaTeX-mode))
+  
+  ;; -----------------------------------------------------------------------------
+  
+  (provide 'config-latex)
+  
+#+END_SRC

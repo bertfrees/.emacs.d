@@ -1,0 +1,11 @@
+* JavaScript
+
+#+BEGIN_SRC emacs-lisp
+  
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
+  
+  ;; -----------------------------------------------------------------------------
+  
+  (provide 'config-js)
+  
+#+END_SRC

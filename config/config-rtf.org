@@ -1,0 +1,13 @@
+* RTF
+
+#+BEGIN_SRC emacs-lisp
+  
+  (require-package 'rtf-mode 'rtf-mode)
+  
+  (add-to-list 'auto-mode-alist '("\\.rtf\\'" . rtf-mode))
+  
+  ;; -----------------------------------------------------------------------------
+  
+  (provide 'config-rtf)
+  
+#+END_SRC

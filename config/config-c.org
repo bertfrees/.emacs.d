@@ -1,0 +1,105 @@
+* C
+
+#+BEGIN_SRC emacs-lisp
+  
+  (setq-default indent-tabs-mode t)
+  
+  (setq-default c-basic-offset 4)
+  (setq-default c-electric-flag nil)
+  (setq-default c-auto-newline nil)
+  
+  (smart-tabs-advice c-indent-line c-basic-offset)
+  (smart-tabs-advice c-indent-region c-basic-offset)
+  
+  (add-hook 'c-mode-common-hook
+    (lambda () (local-set-key (kbd "RET") 'c-newline-and-indent-maybe-auto-newline)
+               (setq c-backspace-function 'backward-delete-char)
+               (when (display-graphic-p)
+                 (whitespace-mode t))
+               (smart-tabs-mode t)
+               (fci-mode t)
+               (c-set-lisp-style)))
+  
+  ;; -----------------------------------------------------------------------------
+  
+  ;; lisp style
+  (defun c-set-lisp-style ()
+    (interactive)
+    (c-set-style "python")
+    (c-set-offset 'block-close '+)
+    (add-to-list 'c-hanging-braces-alist '(block-close))
+    (add-to-list 'c-hanging-braces-alist '(class-open))
+    (add-to-list 'c-hanging-braces-alist '(defun-open after))
+    (setq indent-tabs-mode t)
+    (setq tab-width 4)
+    (setq c-basic-offset 4)
+    (guess-style-guess-variable 'indent-tabs-mode)
+    (guess-style-guess-variable 'tab-width)
+    (guess-style-guess-variable 'c-basic-offset))
+  
+  ;; java style
+  (defun c-set-java-style ()
+    (interactive)
+    (c-set-style "java")
+    (setq indent-tabs-mode t)
+    (setq tab-width 4)
+    (setq c-basic-offset 4)
+    (guess-style-guess-variable 'indent-tabs-mode)	
+    (guess-style-guess-variable 'tab-width)
+    (guess-style-guess-variable 'c-basic-offset))
+  
+  ;; gnu style
+  (defun c-set-gnu-style ()
+    (interactive)
+    (c-set-style "gnu")
+    (setq indent-tabs-mode t)
+    (setq tab-width 8)
+    (setq c-basic-offset 2))
+  
+  ;; -----------------------------------------------------------------------------
+  
+  (defun c-newline-and-indent-maybe-auto-newline ()
+    (interactive)
+    (c-point-syntax)
+    (if (and (eq (char-before) ?\{)
+             (eq (char-after) ?\})
+             (not (c-save-buffer-state () (c-in-literal))))
+        (progn
+          ;; insert newline between braces
+          (save-excursion (newline))
+          ;; insert newline before opening brace if needed
+          (save-excursion
+            (backward-char)
+            (when (and (memq 'before (c-brace-newlines (c-point-syntax)))
+                       (save-excursion
+                         (beginning-of-line)
+                         (not (looking-at "[ \t]*\{$"))))
+              (let ((trailspaces (abs (skip-chars-backward " "))))
+                (if (> trailspaces 0)
+                    (delete-char trailspaces)))
+              (newline)
+              (c-indent-line)))
+          (forward-char)
+          ;; insert newline before closing brace if needed
+          (if (memq 'before (c-brace-newlines (c-point-syntax)))
+              (progn (save-excursion (newline))
+                     (c-indent-line)
+                     (save-excursion (forward-char)
+                                     (c-indent-line)))
+            (c-indent-line)))
+      (newline)
+      (c-indent-line)))
+  
+  ;; -----------------------------------------------------------------------------
+  ;; MAKE
+  ;; -----------------------------------------------------------------------------
+  
+  (add-hook 'makefile-mode-hook
+    (lambda () (setq indent-tabs-mode t)
+               (setq tab-width 4)))
+  
+  ;; -----------------------------------------------------------------------------
+  
+  (provide 'config-c)
+  
+#+END_SRC

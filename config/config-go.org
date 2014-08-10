@@ -1,0 +1,13 @@
+* Go
+
+#+BEGIN_SRC emacs-lisp
+  
+  (require-package 'go-mode 'go-mode)
+  
+  (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+  
+  ;; -----------------------------------------------------------------------------
+  
+  (provide 'config-go)
+  
+#+END_SRC
