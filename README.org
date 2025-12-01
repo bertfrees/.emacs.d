@@ -1,3 +1,5 @@
+My Emacs configuration is now part of https://github.com/bertfrees/home
+
 * [[https://github.com/bertfrees/.emacs.d][.emacs.d]]
 
 My Emacs configuration
